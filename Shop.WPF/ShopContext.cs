@@ -2,14 +2,14 @@
 
 namespace Shop.WPF
 {
-    class Context : DbContext
+    class ShopContext : DbContext
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<Customer> Customers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source=products.db"); 
+            optionsBuilder.UseSqlite("Data Source=shop.db"); 
         }
     }
 
@@ -22,5 +22,12 @@ namespace Shop.WPF
         public string ZipCode { get; set; }
         public string Street { get; set; }
         public string Number { get; set; }
+    }
+
+    public class Product
+    {
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public double Price { get; set; }
     }
 }

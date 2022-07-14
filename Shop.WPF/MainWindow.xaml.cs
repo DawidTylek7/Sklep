@@ -12,7 +12,7 @@ namespace Shop.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly Context _context = new Context();
+        private readonly ShopContext _shopContext = new ShopContext();
 
         private CollectionViewSource customersViewSource;
         private CollectionViewSource productsViewSource;
@@ -28,41 +28,33 @@ namespace Shop.WPF
         {
             // this is for demo purposes only, to make it easier
             // to get up and running
-            _context.Database.EnsureCreated();
+            _shopContext.Database.EnsureCreated();
 
             // load the entities into EF Core
-            _context.Products.Load();
-            _context.Customers.Load();
+            _shopContext.Products.Load();
+            _shopContext.Customers.Load();
 
             // bind to the source
-            productsViewSource.Source = _context.Products.Local.ToObservableCollection();
-            customersViewSource.Source = _context.Customers.Local.ToObservableCollection();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            _context.SaveChanges();
-
-            productsDataGrid.Items.Refresh();
+            productsViewSource.Source = _shopContext.Products.Local.ToObservableCollection();
+            customersViewSource.Source = _shopContext.Customers.Local.ToObservableCollection();
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            _context.Dispose();
+            _shopContext.Dispose();
             base.OnClosing(e);
         }
 
         private void OnCustomerSave(object sender, RoutedEventArgs e)
         {
-         
             if (string.IsNullOrEmpty(txtCustomerId.Text))
             {
                 var customer = new Customer { FirstName = txtFirstName.Text, LastName = txtLastName.Text, City = txtCity.Text, ZipCode = txtZipCode.Text, Street = txtStreet.Text, Number = txtNumber.Text };
-                _context.Customers.Add(customer);
+                _shopContext.Customers.Add(customer);
             }
             else
             {
-                var customer = _context.Customers.SingleOrDefault(x => x.CustomerId == int.Parse(txtCustomerId.Text));
+                var customer = _shopContext.Customers.SingleOrDefault(x => x.CustomerId == int.Parse(txtCustomerId.Text));
                 customer.FirstName = txtFirstName.Text;
                 customer.LastName = txtLastName.Text;
                 customer.City = txtCity.Text;
@@ -71,7 +63,7 @@ namespace Shop.WPF
                 customer.Number = txtNumber.Text;
             }
             
-            _context.SaveChanges();
+            _shopContext.SaveChanges();
             CustomerGrid.Items.Refresh();
 
             foreach (var ctl in CustomerForm.Children)
@@ -84,13 +76,53 @@ namespace Shop.WPF
         private void OnCustomerDelete(object sender, RoutedEventArgs e)
         {
             var id = (((FrameworkElement)sender).DataContext as Customer).CustomerId;
-            var customer = _context.Customers.SingleOrDefault(x => x.CustomerId == id);
-            _context.Customers.Attach(customer);
-            _context.Customers.Remove(customer);
-            _context.SaveChanges();
+            var customer = _shopContext.Customers.SingleOrDefault(x => x.CustomerId == id);
+            _shopContext.Customers.Attach(customer);
+            _shopContext.Customers.Remove(customer);
+            _shopContext.SaveChanges();
             CustomerGrid.Items.Refresh();
 
             foreach (var ctl in CustomerForm.Children)
+            {
+                if (ctl.GetType() == typeof(TextBox))
+                    ((TextBox)ctl).Text = string.Empty;
+            }
+        }
+
+        private void OnProductSave(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtProductId.Text))
+            {
+                var product = new Product { ProductName = txtProductName.Text, Price = double.Parse(txtPrice.Text) };
+                _shopContext.Products.Add(product);
+            }
+            else
+            {
+                var product = _shopContext.Products.SingleOrDefault(x => x.ProductId == int.Parse(txtCustomerId.Text));
+                product.ProductName = txtProductName.Text;
+                product.Price = double.Parse(txtPrice.Text);
+            }
+
+            _shopContext.SaveChanges();
+            ProductGrid.Items.Refresh();
+
+            foreach (var ctl in ProductForm.Children)
+            {
+                if (ctl.GetType() == typeof(TextBox))
+                    ((TextBox)ctl).Text = string.Empty;
+            }
+        }
+
+        private void OnProductDelete(object sender, RoutedEventArgs e)
+        {
+            var id = (((FrameworkElement)sender).DataContext as Product).ProductId;
+            var customer = _shopContext.Products.SingleOrDefault(x => x.ProductId == id);
+            _shopContext.Products.Attach(customer);
+            _shopContext.Products.Remove(customer);
+            _shopContext.SaveChanges();
+            ProductGrid.Items.Refresh();
+
+            foreach (var ctl in ProductForm.Children)
             {
                 if (ctl.GetType() == typeof(TextBox))
                     ((TextBox)ctl).Text = string.Empty;

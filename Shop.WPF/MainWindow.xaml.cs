@@ -14,12 +14,14 @@ namespace Shop.WPF
     {
         private readonly ShopContext _shopContext = new ShopContext();
 
+        private CollectionViewSource ordersViewSource;
         private CollectionViewSource customersViewSource;
         private CollectionViewSource productsViewSource;
 
         public MainWindow()
         {
             InitializeComponent();
+            ordersViewSource = (CollectionViewSource)FindResource(nameof(ordersViewSource));
             customersViewSource = (CollectionViewSource)FindResource(nameof(customersViewSource));
             productsViewSource = (CollectionViewSource)FindResource(nameof(productsViewSource));
         }
@@ -31,12 +33,21 @@ namespace Shop.WPF
             _shopContext.Database.EnsureCreated();
 
             // load the entities into EF Core
+            _shopContext.Orders.Load();
             _shopContext.Products.Load();
             _shopContext.Customers.Load();
 
             // bind to the source
+            ordersViewSource.Source = _shopContext.Orders.Local.ToObservableCollection();
             productsViewSource.Source = _shopContext.Products.Local.ToObservableCollection();
             customersViewSource.Source = _shopContext.Customers.Local.ToObservableCollection();
+
+
+            foreach (var ctl in OrderForm.Children)
+            { 
+                if (ctl.GetType() == typeof(ComboBox))
+                    ((ComboBox)ctl).SelectedIndex = -1;
+            }
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -126,6 +137,54 @@ namespace Shop.WPF
             {
                 if (ctl.GetType() == typeof(TextBox))
                     ((TextBox)ctl).Text = string.Empty;
+            }
+        }
+
+        private void OnOrderDelete(object sender, RoutedEventArgs e)
+        {
+            var id = (((FrameworkElement)sender).DataContext as Order).OrderId;
+            var Order = _shopContext.Orders.SingleOrDefault(x => x.OrderId == id);
+            _shopContext.Orders.Attach(Order);
+            _shopContext.Orders.Remove(Order);
+            _shopContext.SaveChanges();
+            OrderGrid.Items.Refresh();
+
+            foreach (var ctl in OrderForm.Children)
+            {
+                if (ctl.GetType() == typeof(TextBox))
+                    ((TextBox)ctl).Text = string.Empty;
+                if (ctl.GetType() == typeof(ComboBox))
+                    ((ComboBox) ctl).SelectedIndex = -1;
+            }
+        }
+
+        private void OnOrderSave(object sender, RoutedEventArgs e)
+        {
+            var customer = cbCustomer.SelectedValue as Customer;
+            var product = cbProduct.SelectedValue as Product;
+
+            if (string.IsNullOrEmpty(txtProductId.Text))
+            {
+                var order = new Order { Quantity = int.Parse(txtQuantity.Text), Customer = customer, Product = product};
+                _shopContext.Orders.Add(order);
+            }
+            else
+            {
+                var order = _shopContext.Orders.SingleOrDefault(x => x.OrderId == int.Parse(txtOrderId.Text));
+                order.Quantity = int.Parse(txtQuantity.Text);
+                order.Customer = customer;
+                order.Product = product;
+            }
+
+            _shopContext.SaveChanges();
+            OrderGrid.Items.Refresh();
+
+            foreach (var ctl in OrderForm.Children)
+            {
+                if (ctl.GetType() == typeof(TextBox))
+                    ((TextBox)ctl).Text = string.Empty;
+                if (ctl.GetType() == typeof(ComboBox))
+                    ((ComboBox)ctl).SelectedIndex = -1;
             }
         }
     }

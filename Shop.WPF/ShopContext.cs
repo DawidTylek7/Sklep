@@ -4,13 +4,24 @@ namespace Shop.WPF
 {
     class ShopContext : DbContext
     {
-        public DbSet<Product> Products { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<Customer> Customers { get; set; }
-
+        public DbSet<Product> Products { get; set; }
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite("Data Source=shop.db"); 
         }
+    }
+
+    public class Order
+    {
+        public int OrderId { get; set; }
+
+        public int Quantity { get; set; }
+
+        public Product Product { get; set; }
+        public Customer Customer { get; set; }
     }
 
     public class Customer

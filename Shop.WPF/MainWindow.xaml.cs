@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
 
 namespace Shop.WPF
@@ -42,12 +44,7 @@ namespace Shop.WPF
             customersViewSource.Source = _shopContext.Customers.Local.ToObservableCollection();
             shippingsViewSource.Source = _shopContext.Shippings.Local.ToObservableCollection();
 
-
-            foreach (var ctl in OrderForm.Children)
-            { 
-                if (ctl.GetType() == typeof(ComboBox))
-                    ((ComboBox)ctl).SelectedIndex = -1;
-            }
+            ClearGridFields(OrderForm);
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -77,11 +74,7 @@ namespace Shop.WPF
             _shopContext.SaveChanges();
             CustomerGrid.Items.Refresh();
 
-            foreach (var ctl in CustomerForm.Children)
-            {
-                if (ctl.GetType() == typeof(TextBox))
-                    ((TextBox)ctl).Text = string.Empty;
-            }
+            ClearGridFields(CustomerForm);
         }
 
         private void OnCustomerDelete(object sender, RoutedEventArgs e)
@@ -93,11 +86,7 @@ namespace Shop.WPF
             _shopContext.SaveChanges();
             CustomerGrid.Items.Refresh();
 
-            foreach (var ctl in CustomerForm.Children)
-            {
-                if (ctl.GetType() == typeof(TextBox))
-                    ((TextBox)ctl).Text = string.Empty;
-            }
+            ClearGridFields(CustomerForm);
         }
 
         private void OnProductSave(object sender, RoutedEventArgs e)
@@ -109,7 +98,7 @@ namespace Shop.WPF
             }
             else
             {
-                var product = _shopContext.Products.SingleOrDefault(x => x.ProductId == int.Parse(txtCustomerId.Text));
+                var product = _shopContext.Products.SingleOrDefault(x => x.ProductId == int.Parse(txtProductId.Text));
                 product.ProductName = txtProductName.Text;
                 product.Price = double.Parse(txtPrice.Text);
             }
@@ -117,11 +106,7 @@ namespace Shop.WPF
             _shopContext.SaveChanges();
             ProductGrid.Items.Refresh();
 
-            foreach (var ctl in ProductForm.Children)
-            {
-                if (ctl.GetType() == typeof(TextBox))
-                    ((TextBox)ctl).Text = string.Empty;
-            }
+            ClearGridFields(ProductForm);
         }
 
         private void OnProductDelete(object sender, RoutedEventArgs e)
@@ -133,11 +118,7 @@ namespace Shop.WPF
             _shopContext.SaveChanges();
             ProductGrid.Items.Refresh();
 
-            foreach (var ctl in ProductForm.Children)
-            {
-                if (ctl.GetType() == typeof(TextBox))
-                    ((TextBox)ctl).Text = string.Empty;
-            }
+            ClearGridFields(ProductForm);
         }
 
         private void OnOrderDelete(object sender, RoutedEventArgs e)
@@ -149,23 +130,18 @@ namespace Shop.WPF
             _shopContext.SaveChanges();
             OrderGrid.Items.Refresh();
 
-            foreach (var ctl in OrderForm.Children)
-            {
-                if (ctl.GetType() == typeof(TextBox))
-                    ((TextBox)ctl).Text = string.Empty;
-                if (ctl.GetType() == typeof(ComboBox))
-                    ((ComboBox) ctl).SelectedIndex = -1;
-            }
+            ClearGridFields(OrderForm);
         }
 
         private void OnOrderSave(object sender, RoutedEventArgs e)
         {
             var customer = cbCustomer.SelectedValue as Customer;
             var product = cbProduct.SelectedValue as Product;
+            var shipping = cbShipping.SelectedValue as Shipping;
 
-            if (string.IsNullOrEmpty(txtProductId.Text))
+            if (string.IsNullOrEmpty(txtOrderId.Text))
             {
-                var order = new Order { Quantity = int.Parse(txtQuantity.Text), Customer = customer, Product = product};
+                var order = new Order { Quantity = int.Parse(txtQuantity.Text), Customer = customer, Product = product, Shipping = shipping};
                 _shopContext.Orders.Add(order);
             }
             else
@@ -174,20 +150,15 @@ namespace Shop.WPF
                 order.Quantity = int.Parse(txtQuantity.Text);
                 order.Customer = customer;
                 order.Product = product;
+                order.Shipping = shipping;
             }
 
             _shopContext.SaveChanges();
             OrderGrid.Items.Refresh();
 
-            foreach (var ctl in OrderForm.Children)
-            {
-                if (ctl.GetType() == typeof(TextBox))
-                    ((TextBox)ctl).Text = string.Empty;
-                if (ctl.GetType() == typeof(ComboBox))
-                    ((ComboBox)ctl).SelectedIndex = -1;
-            }
+            ClearGridFields(OrderForm);
         }
-
+        
         private void OnShippingSave(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(txtShippingId.Text))
@@ -205,11 +176,7 @@ namespace Shop.WPF
             _shopContext.SaveChanges();
             ShippingGrid.Items.Refresh();
 
-            foreach (var ctl in ShippingForm.Children)
-            {
-                if (ctl.GetType() == typeof(TextBox))
-                    ((TextBox)ctl).Text = string.Empty;
-            }
+            ClearGridFields(ShippingForm);
         }
 
         private void OnShippingDelete(object sender, RoutedEventArgs e)
@@ -221,11 +188,47 @@ namespace Shop.WPF
             _shopContext.SaveChanges();
             ShippingGrid.Items.Refresh();
 
-            foreach (var ctl in ShippingForm.Children)
+            ClearGridFields(ShippingForm);
+        }
+
+        private void Calculate(object sender, TextChangedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtQuantity.Text))
+            {
+                return;
+            }
+
+            if (cbProduct.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            if (cbShipping.SelectedIndex == -1)
+            {
+                return;
+            }
+
+            var product = cbProduct.SelectedValue as Product;
+            var shipping = cbShipping.SelectedValue as Shipping;
+
+            txtTotal.Text = ((int.Parse(txtQuantity.Text) * product.Price) + shipping.ShippingCost).ToString();
+        }
+
+        private static void ClearGridFields(Grid grid)
+        {
+            foreach (var ctl in grid.Children)
             {
                 if (ctl.GetType() == typeof(TextBox))
                     ((TextBox)ctl).Text = string.Empty;
+                if (ctl.GetType() == typeof(ComboBox))
+                    ((ComboBox)ctl).SelectedIndex = -1;
             }
+        }
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }

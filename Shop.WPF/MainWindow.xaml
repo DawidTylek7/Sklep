@@ -232,7 +232,7 @@
                     <TextBox Grid.Column="1" Grid.Row="1" Height="23" Name="txtProductName" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" Text="{Binding Path=SelectedItem.ProductName, ElementName=ProductGrid}" />
 
                     <Label Grid.Column="2" Content="Cena" Grid.Row="1" Height="28" HorizontalAlignment="Left" Margin="12,0,0,0" VerticalAlignment="Top" />
-                    <TextBox Grid.Column="3" Grid.Row="1" Height="23" Name="txtPrice" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" Text="{Binding Path=SelectedItem.Price, ElementName=ProductGrid}" />
+                    <TextBox Grid.Column="3" Grid.Row="1" Height="23" Name="txtPrice" PreviewTextInput="NumberValidationTextBox" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" Text="{Binding Path=SelectedItem.Price, ElementName=ProductGrid}" />
 
                     <Button Content="Zapisz" Grid.Row="1" Grid.Column="4" Height="23" HorizontalAlignment="Left" Margin="30,0,0,0" Click="OnProductSave" VerticalAlignment="Top" Width="141"   />
 
@@ -289,7 +289,7 @@
                     <TextBox Grid.Column="1" Grid.Row="1" Height="23" Name="txtShippingName" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" Text="{Binding Path=SelectedItem.ShippingName, ElementName=ShippingGrid}" />
 
                     <Label Grid.Column="2" Content="Cena" Grid.Row="1" Height="28" HorizontalAlignment="Left" Margin="12,0,0,0" VerticalAlignment="Top" />
-                    <TextBox Grid.Column="3" Grid.Row="1" Height="23" Name="txtShippingCost" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" Text="{Binding Path=SelectedItem.ShippingCost, ElementName=ShippingGrid}" />
+                    <TextBox Grid.Column="3" Grid.Row="1" Height="23" Name="txtShippingCost" PreviewTextInput="NumberValidationTextBox" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" Text="{Binding Path=SelectedItem.ShippingCost, ElementName=ShippingGrid}" />
 
                     <Button Content="Zapisz" Grid.Row="1" Grid.Column="4" Height="23" HorizontalAlignment="Left" Margin="30,0,0,0" Click="OnShippingSave" VerticalAlignment="Top" Width="141"   />
 

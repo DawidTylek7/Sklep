@@ -206,7 +206,13 @@
                             <GridView>
                                 <GridViewColumn Header="Id" DisplayMemberBinding="{Binding ProductId}"  Width="25" />
                                 <GridViewColumn Header="Nazwa" DisplayMemberBinding="{Binding ProductName}"  Width="300" />
-                                <GridViewColumn Header="Cena" DisplayMemberBinding="{Binding Price}" Width="100" />
+                                <GridViewColumn Header="Cena" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Price, StringFormat='{}{0} zł'}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
                                 <GridViewColumn>
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
@@ -257,7 +263,13 @@
                             <GridView>
                                 <GridViewColumn Header="Id" DisplayMemberBinding="{Binding ShippingId}"  Width="25" />
                                 <GridViewColumn Header="Nazwa" DisplayMemberBinding="{Binding ShippingName}"  Width="300" />
-                                <GridViewColumn Header="Cena" DisplayMemberBinding="{Binding ShippingCost}" Width="100" />
+                                <GridViewColumn Header="Cena" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding ShippingCost, StringFormat='{}{0} zł'}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
                                 <GridViewColumn>
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>

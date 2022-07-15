@@ -221,7 +221,7 @@ namespace Shop.WPF
             var product = cbProduct.SelectedValue as Product;
             var shipping = cbShipping.SelectedValue as Shipping;
 
-            txtTotal.Text = ((int.Parse(txtQuantity.Text) * product.Price) + shipping.ShippingCost).ToString();
+            txtTotal.Text = ((int.Parse(txtQuantity.Text) * product.Price) + shipping.ShippingCost) + " zł";
         }
 
         private static void ClearGridFields(Grid grid)

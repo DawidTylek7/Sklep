@@ -191,7 +191,17 @@ namespace Shop.WPF
             ClearGridFields(ShippingForm);
         }
 
-        private void Calculate(object sender, TextChangedEventArgs e)
+        private void PriceComponentsOnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            Calculate();
+        }
+
+        private void PriceComponentsOnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Calculate();
+        }
+
+        private void Calculate()
         {
             if (string.IsNullOrEmpty(txtQuantity.Text))
             {
@@ -230,5 +240,6 @@ namespace Shop.WPF
             Regex regex = new Regex("[^0-9,]+");
             e.Handled = regex.IsMatch(e.Text);
         }
+
     }
 }

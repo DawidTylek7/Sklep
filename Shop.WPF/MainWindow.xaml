@@ -41,7 +41,7 @@
                     <TextBox Visibility="Hidden" Name="txtOrderId" Text="{Binding Path=SelectedItem.OrderId, ElementName=OrderGrid}" />
 
                     <Label Grid.Column="0" Content="Produkt" Grid.Row="1" Height="28" HorizontalAlignment="Left" Margin="12,0,0,0" VerticalAlignment="Top" />
-                    <ComboBox Grid.Column="1" Grid.Row="1" Height="23" Name="cbProduct" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" ItemsSource="{Binding Source={StaticResource productsViewSource}}">
+                    <ComboBox Grid.Column="1" Grid.Row="1" Height="23" Name="cbProduct" HorizontalAlignment="Left" SelectionChanged="PriceComponentsOnSelectionChanged" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" ItemsSource="{Binding Source={StaticResource productsViewSource}}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock>
@@ -57,7 +57,7 @@
                     </ComboBox>
 
                     <Label Grid.Column="2" Content="Ilość" Grid.Row="1" Height="28" HorizontalAlignment="Left" Margin="12,0,0,0" VerticalAlignment="Top" />
-                    <TextBox Grid.Column="3" Grid.Row="1" Height="23" Name="txtQuantity" HorizontalAlignment="Left" PreviewTextInput="NumberValidationTextBox" TextChanged="Calculate" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" Text="{Binding Path=SelectedItem.Quantity, ElementName=OrderGrid}" />
+                    <TextBox Grid.Column="3" Grid.Row="1" Height="23" Name="txtQuantity" HorizontalAlignment="Left" PreviewTextInput="NumberValidationTextBox" TextChanged="PriceComponentsOnTextChanged" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" Text="{Binding Path=SelectedItem.Quantity, ElementName=OrderGrid}" />
 
                     <Label Grid.Column="0" Content="Klient" Grid.Row="2" Height="28" HorizontalAlignment="Left" Margin="12,0,0,0" VerticalAlignment="Top" />
                     <ComboBox Grid.Column="1" Grid.Row="2" Height="23" Name="cbCustomer" SelectedIndex="-1" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" ItemsSource="{Binding Source={StaticResource customersViewSource}}">
@@ -76,7 +76,7 @@
                     </ComboBox>
 
                     <Label Grid.Column="2" Content="Wysyłka" Grid.Row="2" Height="28" HorizontalAlignment="Left" Margin="12,0,0,0" VerticalAlignment="Top" />
-                    <ComboBox Grid.Column="3" Grid.Row="2" Height="23" Name="cbShipping" SelectedIndex="-1" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" ItemsSource="{Binding Source={StaticResource shippingsViewSource}}">
+                    <ComboBox Grid.Column="3" Grid.Row="2" Height="23" Name="cbShipping" SelectionChanged="PriceComponentsOnSelectionChanged" SelectedIndex="-1" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" ItemsSource="{Binding Source={StaticResource shippingsViewSource}}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock>

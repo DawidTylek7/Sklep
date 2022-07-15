@@ -7,6 +7,7 @@ namespace Shop.WPF
         public DbSet<Order> Orders { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Shipping> Shippings { get; set; }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -40,5 +41,12 @@ namespace Shop.WPF
         public int ProductId { get; set; }
         public string ProductName { get; set; }
         public double Price { get; set; }
+    }  
+    
+    public class Shipping
+    {
+        public int ShippingId { get; set; }
+        public string ShippingName { get; set; }
+        public double ShippingCost { get; set; }
     }
 }

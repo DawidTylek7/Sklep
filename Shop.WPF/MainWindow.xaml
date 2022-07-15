@@ -10,6 +10,7 @@
         <CollectionViewSource x:Key="ordersViewSource"/>
         <CollectionViewSource x:Key="customersViewSource"/>
         <CollectionViewSource x:Key="productsViewSource"/>
+        <CollectionViewSource x:Key="shippingsViewSource"/>
     </Window.Resources>
     <Grid>
         <TabControl HorizontalAlignment="Left" Height="409" VerticalAlignment="Top" Width="772" Margin="10,0,0,0">
@@ -40,7 +41,20 @@
                     <TextBox Visibility="Hidden" Name="txtOrderId" Text="{Binding Path=SelectedItem.OrderId, ElementName=OrderGrid}" />
 
                     <Label Grid.Column="0" Content="Produkt" Grid.Row="1" Height="28" HorizontalAlignment="Left" Margin="12,0,0,0" VerticalAlignment="Top" />
-                    <ComboBox Grid.Column="1" Grid.Row="1" Height="23" Name="cbProduct" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" DisplayMemberPath="ProductName" ItemsSource="{Binding Source={StaticResource productsViewSource}}" />
+                    <ComboBox Grid.Column="1" Grid.Row="1" Height="23" Name="cbProduct" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" ItemsSource="{Binding Source={StaticResource productsViewSource}}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0}, {1} zł">
+                                            <Binding Path="ProductName"/>
+                                            <Binding Path="Price"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
 
                     <Label Grid.Column="2" Content="Ilość" Grid.Row="1" Height="28" HorizontalAlignment="Left" Margin="12,0,0,0" VerticalAlignment="Top" />
                     <TextBox Grid.Column="3" Grid.Row="1" Height="23" Name="txtQuantity" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" Text="{Binding Path=SelectedItem.Quantity, ElementName=OrderGrid}" />
@@ -197,6 +211,57 @@
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="Usuń" Click="OnProductDelete"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Wysyłka" Width="100">
+                <Grid Background="#FFE5E5E5" Name="ShippingForm">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <DockPanel Grid.Row="0" Grid.ColumnSpan="5" >
+                        <Label DockPanel.Dock="Left" Content="Dane"/>
+                        <Separator/>
+                    </DockPanel>
+
+                    <TextBox Visibility="Hidden" Name="txtShippingId" Text="{Binding Path=SelectedItem.ShippingId, ElementName=CustomerGrid}" />
+
+                    <Label Grid.Column="0" Content="Nazwa" Grid.Row="1" Height="28" HorizontalAlignment="Left" Margin="12,0,0,0" VerticalAlignment="Top" />
+                    <TextBox Grid.Column="1" Grid.Row="1" Height="23" Name="txtShippingName" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" Text="{Binding Path=SelectedItem.ShippingName, ElementName=ShippingGrid}" />
+
+                    <Label Grid.Column="2" Content="Cena" Grid.Row="1" Height="28" HorizontalAlignment="Left" Margin="12,0,0,0" VerticalAlignment="Top" />
+                    <TextBox Grid.Column="3" Grid.Row="1" Height="23" Name="txtShippingCost" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" Width="178" Text="{Binding Path=SelectedItem.ShippingCost, ElementName=ShippingGrid}" />
+
+                    <Button Content="Zapisz" Grid.Row="1" Grid.Column="4" Height="23" HorizontalAlignment="Left" Margin="30,0,0,0" Click="OnShippingSave" VerticalAlignment="Top" Width="141"   />
+
+                    <ListView Grid.Column="0" Grid.ColumnSpan="5" Name="ShippingGrid" Grid.Row="5" Margin="4,0,12,13" ItemsSource="{Binding Source={StaticResource shippingsViewSource}}"  >
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Id" DisplayMemberBinding="{Binding ShippingId}"  Width="25" />
+                                <GridViewColumn Header="Nazwa" DisplayMemberBinding="{Binding ShippingName}"  Width="300" />
+                                <GridViewColumn Header="Cena" DisplayMemberBinding="{Binding ShippingCost}" Width="100" />
+                                <GridViewColumn>
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Usuń" Click="OnShippingDelete"/>
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>

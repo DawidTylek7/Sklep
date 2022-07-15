@@ -17,6 +17,7 @@ namespace Shop.WPF
         private CollectionViewSource ordersViewSource;
         private CollectionViewSource customersViewSource;
         private CollectionViewSource productsViewSource;
+        private CollectionViewSource shippingsViewSource;
 
         public MainWindow()
         {
@@ -24,23 +25,22 @@ namespace Shop.WPF
             ordersViewSource = (CollectionViewSource)FindResource(nameof(ordersViewSource));
             customersViewSource = (CollectionViewSource)FindResource(nameof(customersViewSource));
             productsViewSource = (CollectionViewSource)FindResource(nameof(productsViewSource));
+            shippingsViewSource = (CollectionViewSource)FindResource(nameof(shippingsViewSource));
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            // this is for demo purposes only, to make it easier
-            // to get up and running
             _shopContext.Database.EnsureCreated();
 
-            // load the entities into EF Core
             _shopContext.Orders.Load();
             _shopContext.Products.Load();
             _shopContext.Customers.Load();
+            _shopContext.Shippings.Load();
 
-            // bind to the source
             ordersViewSource.Source = _shopContext.Orders.Local.ToObservableCollection();
             productsViewSource.Source = _shopContext.Products.Local.ToObservableCollection();
             customersViewSource.Source = _shopContext.Customers.Local.ToObservableCollection();
+            shippingsViewSource.Source = _shopContext.Shippings.Local.ToObservableCollection();
 
 
             foreach (var ctl in OrderForm.Children)
@@ -127,9 +127,9 @@ namespace Shop.WPF
         private void OnProductDelete(object sender, RoutedEventArgs e)
         {
             var id = (((FrameworkElement)sender).DataContext as Product).ProductId;
-            var customer = _shopContext.Products.SingleOrDefault(x => x.ProductId == id);
-            _shopContext.Products.Attach(customer);
-            _shopContext.Products.Remove(customer);
+            var product = _shopContext.Products.SingleOrDefault(x => x.ProductId == id);
+            _shopContext.Products.Attach(product);
+            _shopContext.Products.Remove(product);
             _shopContext.SaveChanges();
             ProductGrid.Items.Refresh();
 
@@ -185,6 +185,46 @@ namespace Shop.WPF
                     ((TextBox)ctl).Text = string.Empty;
                 if (ctl.GetType() == typeof(ComboBox))
                     ((ComboBox)ctl).SelectedIndex = -1;
+            }
+        }
+
+        private void OnShippingSave(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtShippingId.Text))
+            {
+                var shipping = new Shipping { ShippingName = txtShippingName.Text, ShippingCost = double.Parse(txtShippingCost.Text) };
+                _shopContext.Shippings.Add(shipping);
+            }
+            else
+            {
+                var shipping = _shopContext.Shippings.SingleOrDefault(x => x.ShippingId == int.Parse(txtShippingId.Text));
+                shipping.ShippingName = txtShippingName.Text;
+                shipping.ShippingCost = double.Parse(txtShippingCost.Text);
+            }
+
+            _shopContext.SaveChanges();
+            ShippingGrid.Items.Refresh();
+
+            foreach (var ctl in ShippingForm.Children)
+            {
+                if (ctl.GetType() == typeof(TextBox))
+                    ((TextBox)ctl).Text = string.Empty;
+            }
+        }
+
+        private void OnShippingDelete(object sender, RoutedEventArgs e)
+        {
+            var id = (((FrameworkElement)sender).DataContext as Shipping).ShippingId;
+            var shipping = _shopContext.Shippings.SingleOrDefault(x => x.ShippingId == id);
+            _shopContext.Shippings.Attach(shipping);
+            _shopContext.Shippings.Remove(shipping);
+            _shopContext.SaveChanges();
+            ShippingGrid.Items.Refresh();
+
+            foreach (var ctl in ShippingForm.Children)
+            {
+                if (ctl.GetType() == typeof(TextBox))
+                    ((TextBox)ctl).Text = string.Empty;
             }
         }
     }
